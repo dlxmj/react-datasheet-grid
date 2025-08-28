@@ -46,7 +46,7 @@ const emptyRows = [
 ]
 
 test('Single value text', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -80,7 +80,7 @@ test('Single value text', async () => {
 })
 
 test('Single value text plain', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -108,7 +108,7 @@ test('Single value text plain', async () => {
 })
 
 test('HTML over text', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -140,7 +140,7 @@ test('HTML over text', async () => {
 })
 
 test('Single value on multiple rows selection', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -186,7 +186,7 @@ test('Single value on multiple rows selection', async () => {
 })
 
 test('Single row on multiple rows selection', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -232,7 +232,7 @@ test('Single row on multiple rows selection', async () => {
 })
 
 test('Single row on multiple rows selection with overflow to the right', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -278,7 +278,7 @@ test('Single row on multiple rows selection with overflow to the right', async (
 })
 
 test('Multiple rows', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -324,7 +324,7 @@ test('Multiple rows', async () => {
 })
 
 test('Multiple rows with overflow to the right', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -367,7 +367,7 @@ test('Multiple rows with overflow to the right', async () => {
 })
 
 test('Multiple rows with overflow at the bottom', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -412,7 +412,7 @@ test('Multiple rows with overflow at the bottom', async () => {
 })
 
 test('Multiple rows with overflow at the bottom and locked rows', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(

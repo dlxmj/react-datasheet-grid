@@ -51,7 +51,9 @@ const DEFAULT_CREATE_ROW: DataSheetGridProps<any>['createRow'] = () => ({})
 const DEFAULT_EMPTY_CALLBACK: () => void = () => null
 const DEFAULT_DUPLICATE_ROW: DataSheetGridProps<any>['duplicateRow'] = ({
   rowData,
-}) => ({ ...rowData })
+}) => ({
+  ...rowData,
+})
 
 type ScrollBehavior = {
   doNotScrollX?: boolean
@@ -60,761 +62,762 @@ type ScrollBehavior = {
 
 // eslint-disable-next-line react/display-name
 export const DataSheetGrid = React.memo(
-  React.forwardRef<DataSheetGridRef, DataSheetGridProps<any>>(
-    <T extends any>(
-      {
-        value: data = DEFAULT_DATA,
-        className,
-        style,
-        height: maxHeight = 400,
-        onChange = DEFAULT_EMPTY_CALLBACK,
-        columns: rawColumns = DEFAULT_COLUMNS,
-        rowHeight = 40,
-        headerRowHeight = typeof rowHeight === 'number' ? rowHeight : 40,
-        gutterColumn,
-        stickyRightColumn,
-        rowKey,
-        addRowsComponent: AddRowsComponent = AddRows as (props: AddRowsComponentProps) => React.ReactElement | null,
-        createRow = DEFAULT_CREATE_ROW as () => T,
-        autoAddRow = false,
-        lockRows = false,
-        disableExpandSelection = false,
-        disableSmartDelete = false,
-        duplicateRow = DEFAULT_DUPLICATE_ROW,
-        contextMenuComponent: ContextMenuComponent = ContextMenu as (props: ContextMenuComponentProps) => React.ReactElement | null,
-        disableContextMenu: disableContextMenuRaw = false,
-        onFocus = DEFAULT_EMPTY_CALLBACK,
-        onBlur = DEFAULT_EMPTY_CALLBACK,
-        onActiveCellChange = DEFAULT_EMPTY_CALLBACK,
-        onSelectionChange = DEFAULT_EMPTY_CALLBACK,
-        rowClassName,
-        cellClassName,
-        onScroll,
-      }: DataSheetGridProps<T>,
-      ref: React.ForwardedRef<DataSheetGridRef>
-    ): React.ReactElement => {
-      const lastEditingCellRef = useRef<Cell | null>(null)
-      const disableContextMenu = disableContextMenuRaw || lockRows
-      const columns = useColumns(rawColumns, gutterColumn, stickyRightColumn)
-      const hasStickyRightColumn = Boolean(stickyRightColumn)
-      const innerRef = useRef<HTMLDivElement>(null)
-      const outerRef = useRef<HTMLDivElement>(null)
-      const beforeTabIndexRef = useRef<HTMLDivElement>(null)
-      const afterTabIndexRef = useRef<HTMLDivElement>(null)
+  React.forwardRef(function <T extends { id: string | number }>(
+    {
+      value: data = DEFAULT_DATA as T[],
+      className,
+      style,
+      height: maxHeight = 400,
+      onChange = DEFAULT_EMPTY_CALLBACK,
+      columns: rawColumns = DEFAULT_COLUMNS as Column<T, any, any>[],
+      rowHeight = 40,
+      headerRowHeight = typeof rowHeight === 'number' ? rowHeight : 40,
+      gutterColumn,
+      stickyRightColumn,
+      rowKey,
+      addRowsComponent: AddRowsComponent = AddRows as (
+        props: AddRowsComponentProps
+      ) => React.ReactElement | null,
+      createRow = DEFAULT_CREATE_ROW as () => T,
+      autoAddRow = false,
+      lockRows = false,
+      disableExpandSelection = false,
+      disableSmartDelete = false,
+      duplicateRow = DEFAULT_DUPLICATE_ROW as () => T,
+      contextMenuComponent: ContextMenuComponent = ContextMenu as (
+        props: ContextMenuComponentProps
+      ) => React.ReactElement | null,
+      disableContextMenu: disableContextMenuRaw = false,
+      onFocus = DEFAULT_EMPTY_CALLBACK,
+      onBlur = DEFAULT_EMPTY_CALLBACK,
+      onActiveCellChange = DEFAULT_EMPTY_CALLBACK,
+      onSelectionChange = DEFAULT_EMPTY_CALLBACK,
+      rowClassName,
+      cellClassName,
+      onScroll,
+    }: DataSheetGridProps<T>,
+    ref: React.ForwardedRef<DataSheetGridRef<T>>
+  ): React.ReactElement {
+    const lastEditingCellRef = useRef<Cell | null>(null)
+    const disableContextMenu = disableContextMenuRaw || lockRows
+    const columns = useColumns(rawColumns, gutterColumn, stickyRightColumn)
+    const hasStickyRightColumn = Boolean(stickyRightColumn)
+    const innerRef = useRef<HTMLDivElement>(null)
+    const outerRef = useRef<HTMLDivElement>(null)
+    const beforeTabIndexRef = useRef<HTMLDivElement>(null)
+    const afterTabIndexRef = useRef<HTMLDivElement>(null)
 
-      // Default value is 1 for the border
-      const [heightDiff, setHeightDiff] = useDebounceState(1, 100)
+    // Default value is 1 for the border
+    const [heightDiff, setHeightDiff] = useDebounceState(1, 100)
 
-      const { getRowSize, totalSize, getRowIndex } = useRowHeights({
-        value: data,
-        rowHeight,
-      })
+    const { getRowSize, totalSize, getRowIndex } = useRowHeights({
+      value: data,
+      rowHeight,
+    })
 
-      // Height of the list (including scrollbars and borders) to display
-      const displayHeight = Math.min(
-        maxHeight,
-        headerRowHeight + totalSize(maxHeight) + heightDiff
-      )
+    // Height of the list (including scrollbars and borders) to display
+    const displayHeight = Math.min(
+      maxHeight,
+      headerRowHeight + totalSize(maxHeight) + heightDiff
+    )
 
-      // Width and height of the scrollable area
-      const { width, height } = useResizeDetector({
-        targetRef: outerRef,
-        refreshMode: 'throttle',
-        refreshRate: 100,
-      })
+    // Width and height of the scrollable area
+    const { width, height } = useResizeDetector({
+      targetRef: outerRef,
+      refreshMode: 'throttle',
+      refreshRate: 100,
+    })
 
-      setHeightDiff(height ? displayHeight - height : 0)
+    setHeightDiff(height ? displayHeight - height : 0)
 
-      const edges = useEdges(outerRef, width, height)
+    const edges = useEdges(outerRef, width, height)
 
-      const {
-        fullWidth,
-        totalWidth: contentWidth,
-        columnWidths,
-        columnRights,
-      } = useColumnWidths(columns, width)
+    const {
+      fullWidth,
+      totalWidth: contentWidth,
+      columnWidths,
+      columnRights,
+    } = useColumnWidths(columns, width)
 
-      // x,y coordinates of the right click
-      const [contextMenu, setContextMenu] = useState<{
-        x: number
-        y: number
-        cursorIndex: Cell
-      } | null>(null)
+    // x,y coordinates of the right click
+    const [contextMenu, setContextMenu] = useState<{
+      x: number
+      y: number
+      cursorIndex: Cell
+    } | null>(null)
 
-      // Items of the context menu
-      const [contextMenuItems, setContextMenuItems] = useState<
-        ContextMenuItem[]
-      >([])
+    // Items of the context menu
+    const [contextMenuItems, setContextMenuItems] = useState<ContextMenuItem[]>(
+      []
+    )
 
-      // True when the active cell is being edited
-      const [editing, setEditing] = useState(false)
+    // True when the active cell is being edited
+    const [editing, setEditing] = useState(false)
 
-      // Number of rows the user is expanding the selection by, always a number, even when not expanding selection
-      const [expandSelectionRowsCount, setExpandSelectionRowsCount] =
-        useState<number>(0)
+    // Number of rows the user is expanding the selection by, always a number, even when not expanding selection
+    const [expandSelectionRowsCount, setExpandSelectionRowsCount] =
+      useState<number>(0)
 
-      // When not null, represents the index of the row from which we are expanding
-      const [
-        expandingSelectionFromRowIndex,
-        setExpandingSelectionFromRowIndex,
-      ] = useState<number | null>(null)
+    // When not null, represents the index of the row from which we are expanding
+    const [expandingSelectionFromRowIndex, setExpandingSelectionFromRowIndex] =
+      useState<number | null>(null)
 
-      // Highlighted cell, null when not focused
-      const [activeCell, setActiveCell] = useDeepEqualState<
-        (Cell & ScrollBehavior) | null
-      >(null)
+    // Highlighted cell, null when not focused
+    const [activeCell, setActiveCell] = useDeepEqualState<
+      (Cell & ScrollBehavior) | null
+    >(null)
 
-      // The selection cell and the active cell are the two corners of the selection, null when nothing is selected
-      const [selectionCell, setSelectionCell] = useDeepEqualState<
-        (Cell & ScrollBehavior) | null
-      >(null)
+    // The selection cell and the active cell are the two corners of the selection, null when nothing is selected
+    const [selectionCell, setSelectionCell] = useDeepEqualState<
+      (Cell & ScrollBehavior) | null
+    >(null)
 
-      // Min and max of the current selection (rectangle defined by the active cell and the selection cell), null when nothing is selected
-      const selection = useMemo<Selection | null>(
-        () =>
-          activeCell &&
-          selectionCell && {
-            min: {
-              col: Math.min(activeCell.col, selectionCell.col),
-              row: Math.min(activeCell.row, selectionCell.row),
-            },
-            max: {
-              col: Math.max(activeCell.col, selectionCell.col),
-              row: Math.max(activeCell.row, selectionCell.row),
-            },
+    // Min and max of the current selection (rectangle defined by the active cell and the selection cell), null when nothing is selected
+    const selection = useMemo<Selection | null>(
+      () =>
+        activeCell &&
+        selectionCell && {
+          min: {
+            col: Math.min(activeCell.col, selectionCell.col),
+            row: Math.min(activeCell.row, selectionCell.row),
           },
-        [activeCell, selectionCell]
-      )
+          max: {
+            col: Math.max(activeCell.col, selectionCell.col),
+            row: Math.max(activeCell.row, selectionCell.row),
+          },
+        },
+      [activeCell, selectionCell]
+    )
 
-      // Behavior of the selection when the user drags the mouse around
-      const [selectionMode, setSelectionMode] = useDeepEqualState({
-        // True when the position of the cursor should impact the columns of the selection
-        columns: false,
-        // True when the position of the cursor should impact the rows of the selection
-        rows: false,
-        // True when the user is dragging the mouse around to select
-        active: false,
-      })
+    // Behavior of the selection when the user drags the mouse around
+    const [selectionMode, setSelectionMode] = useDeepEqualState({
+      // True when the position of the cursor should impact the columns of the selection
+      columns: false,
+      // True when the position of the cursor should impact the rows of the selection
+      rows: false,
+      // True when the user is dragging the mouse around to select
+      active: false,
+    })
 
-      // Same as expandSelectionRowsCount but is null when we should not be able to expand the selection
-      const expandSelection =
-        disableExpandSelection ||
-        editing ||
-        selectionMode.active ||
-        activeCell?.row === data?.length - 1 ||
-        selection?.max.row === data?.length - 1 ||
-        (activeCell &&
-          columns
-            .slice(
-              (selection?.min.col ?? activeCell.col) + 1,
-              (selection?.max.col ?? activeCell.col) + 2
-            )
-            .every((column) => column.disabled === true))
-          ? null
-          : expandSelectionRowsCount
+    // Same as expandSelectionRowsCount but is null when we should not be able to expand the selection
+    const expandSelection =
+      disableExpandSelection ||
+      editing ||
+      selectionMode.active ||
+      activeCell?.row === data?.length - 1 ||
+      selection?.max.row === data?.length - 1 ||
+      (activeCell &&
+        columns
+          .slice(
+            (selection?.min.col ?? activeCell.col) + 1,
+            (selection?.max.col ?? activeCell.col) + 2
+          )
+          .every((column) => column.disabled === true))
+        ? null
+        : expandSelectionRowsCount
 
-      const getInnerBoundingClientRect = useGetBoundingClientRect(innerRef)
-      const getOuterBoundingClientRect = useGetBoundingClientRect(outerRef)
+    const getInnerBoundingClientRect = useGetBoundingClientRect(innerRef)
+    const getOuterBoundingClientRect = useGetBoundingClientRect(outerRef)
 
-      // Blur any element on focusing the grid
-      useEffect(() => {
-        if (activeCell !== null) {
-          ;(document.activeElement as HTMLElement).blur()
-          window.getSelection()?.removeAllRanges()
+    // Blur any element on focusing the grid
+    useEffect(() => {
+      if (activeCell !== null) {
+        ;(document.activeElement as HTMLElement).blur()
+        window.getSelection()?.removeAllRanges()
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeCell !== null])
+
+    // Extract the coordinates of the cursor from a mouse event
+    const getCursorIndex = useCallback(
+      (
+        event: MouseEvent,
+        force: boolean = false,
+        includeSticky: boolean = false
+      ): Cell | null => {
+        const innerBoundingClientRect = getInnerBoundingClientRect(force)
+        const outerBoundingClientRect =
+          includeSticky && getOuterBoundingClientRect(force)
+
+        if (innerBoundingClientRect && columnRights && columnWidths) {
+          let x = event.clientX - innerBoundingClientRect.left
+          let y = event.clientY - innerBoundingClientRect.top
+
+          if (outerBoundingClientRect) {
+            if (
+              event.clientY - outerBoundingClientRect.top <=
+              headerRowHeight
+            ) {
+              y = 0
+            }
+
+            if (
+              event.clientX - outerBoundingClientRect.left <=
+              columnWidths[0]
+            ) {
+              x = 0
+            }
+
+            if (
+              hasStickyRightColumn &&
+              outerBoundingClientRect.right - event.clientX <=
+                columnWidths[columnWidths.length - 1]
+            ) {
+              x = columnRights[columnRights.length - 2] + 1
+            }
+          }
+
+          return {
+            col: columnRights.findIndex((right) => x < right) - 1,
+            row: getRowIndex(y - headerRowHeight),
+          }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [activeCell !== null])
 
-      // Extract the coordinates of the cursor from a mouse event
-      const getCursorIndex = useCallback(
-        (
-          event: MouseEvent,
-          force: boolean = false,
-          includeSticky: boolean = false
-        ): Cell | null => {
-          const innerBoundingClientRect = getInnerBoundingClientRect(force)
-          const outerBoundingClientRect =
-            includeSticky && getOuterBoundingClientRect(force)
+        return null
+      },
+      [
+        columnRights,
+        columnWidths,
+        data.length,
+        getInnerBoundingClientRect,
+        getOuterBoundingClientRect,
+        headerRowHeight,
+        hasStickyRightColumn,
+        getRowIndex,
+      ]
+    )
 
-          if (innerBoundingClientRect && columnRights && columnWidths) {
-            let x = event.clientX - innerBoundingClientRect.left
-            let y = event.clientY - innerBoundingClientRect.top
+    const dataRef = useRef(data)
+    dataRef.current = data
 
-            if (outerBoundingClientRect) {
-              if (
-                event.clientY - outerBoundingClientRect.top <=
-                headerRowHeight
-              ) {
-                y = 0
-              }
+    const isCellDisabled = useCallback(
+      (cell: Cell): boolean => {
+        const disabled = columns[cell.col + 1].disabled
 
-              if (
-                event.clientX - outerBoundingClientRect.left <=
-                columnWidths[0]
-              ) {
-                x = 0
-              }
+        return Boolean(
+          typeof disabled === 'function'
+            ? disabled({
+                rowData: dataRef.current[cell.row],
+                rowIndex: cell.row,
+              })
+            : disabled
+        )
+      },
+      [columns]
+    )
 
-              if (
-                hasStickyRightColumn &&
-                outerBoundingClientRect.right - event.clientX <=
-                  columnWidths[columnWidths.length - 1]
-              ) {
-                x = columnRights[columnRights.length - 2] + 1
-              }
+    const insertRowAfter = useCallback(
+      (row: number, count = 1) => {
+        if (lockRows) {
+          return
+        }
+
+        setSelectionCell(null)
+        setEditing(false)
+
+        onChange(
+          [
+            ...dataRef.current.slice(0, row + 1),
+            ...new Array(count).fill(0).map(createRow),
+            ...dataRef.current.slice(row + 1),
+          ] as T[],
+          [
+            {
+              type: 'CREATE',
+              fromRowIndex: row + 1,
+              toRowIndex: row + 1 + count,
+              data: [],
+            },
+          ]
+        )
+        setActiveCell((a) => ({
+          col: a?.col || 0,
+          row: row + count,
+          doNotScrollX: true,
+        }))
+      },
+      [createRow, lockRows, onChange, setActiveCell, setSelectionCell]
+    )
+
+    const duplicateRows = useCallback(
+      (rowMin: number, rowMax: number = rowMin) => {
+        if (lockRows) {
+          return
+        }
+
+        onChange(
+          [
+            ...dataRef.current.slice(0, rowMax + 1),
+            ...dataRef.current
+              .slice(rowMin, rowMax + 1)
+              .map((rowData, i) =>
+                duplicateRow({ rowData, rowIndex: i + rowMin })
+              ),
+            ...dataRef.current.slice(rowMax + 1),
+          ],
+          [
+            {
+              type: 'CREATE',
+              fromRowIndex: rowMax + 1,
+              toRowIndex: rowMax + 2 + rowMax - rowMin,
+              data: [],
+            },
+          ]
+        )
+        setActiveCell({ col: 0, row: rowMax + 1, doNotScrollX: true })
+        setSelectionCell({
+          col: columns.length - (hasStickyRightColumn ? 3 : 2),
+          row: 2 * rowMax - rowMin + 1,
+          doNotScrollX: true,
+        })
+        setEditing(false)
+      },
+      [
+        columns.length,
+        duplicateRow,
+        lockRows,
+        onChange,
+        setActiveCell,
+        setSelectionCell,
+        hasStickyRightColumn,
+      ]
+    )
+
+    // Scroll to any given cell making sure it is in view
+    const scrollTo = useCallback(
+      (cell: Cell & ScrollBehavior) => {
+        if (!height || !width) {
+          return
+        }
+
+        if (!cell.doNotScrollY) {
+          // Align top
+          const topMax = getRowSize(cell.row).top
+          // Align bottom
+          const topMin =
+            getRowSize(cell.row).top +
+            getRowSize(cell.row).height +
+            headerRowHeight -
+            height +
+            1
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          const scrollTop = outerRef.current!.scrollTop
+
+          if (scrollTop > topMax) {
+            outerRef.current!.scrollTop = topMax
+          } else if (scrollTop < topMin) {
+            outerRef.current!.scrollTop = topMin
+          }
+        }
+
+        if (
+          columnRights &&
+          columnWidths &&
+          outerRef.current &&
+          !cell.doNotScrollX
+        ) {
+          // Align left
+          const leftMax = columnRights[cell.col] - columnRights[0]
+          // Align right
+          const leftMin =
+            columnRights[cell.col] +
+            columnWidths[cell.col + 1] +
+            (hasStickyRightColumn ? columnWidths[columnWidths.length - 1] : 0) -
+            width +
+            1
+
+          const scrollLeft = outerRef.current.scrollLeft
+
+          if (scrollLeft > leftMax) {
+            outerRef.current.scrollLeft = leftMax
+          } else if (scrollLeft < leftMin) {
+            outerRef.current.scrollLeft = leftMin
+          }
+        }
+      },
+      [
+        height,
+        width,
+        headerRowHeight,
+        columnRights,
+        columnWidths,
+        getRowSize,
+        hasStickyRightColumn,
+      ]
+    )
+
+    // Scroll to the selectionCell cell when it changes
+    useEffect(() => {
+      if (selectionCell) {
+        scrollTo(selectionCell)
+      }
+    }, [selectionCell, scrollTo])
+
+    // Scroll to the active cell when it changes
+    useEffect(() => {
+      if (activeCell) {
+        scrollTo(activeCell)
+      }
+    }, [activeCell, scrollTo])
+
+    const setRowData = useCallback(
+      (rowIndex: number, item: T) => {
+        onChange(
+          [
+            ...dataRef.current.slice(0, rowIndex),
+            item,
+            ...dataRef.current.slice(rowIndex + 1),
+          ],
+          [
+            {
+              type: 'UPDATE',
+              fromRowIndex: rowIndex,
+              toRowIndex: rowIndex + 1,
+              data: [item],
+            },
+          ]
+        )
+      },
+      [onChange]
+    )
+
+    const deleteRows = useCallback(
+      (rowMin: number, rowMax: number = rowMin) => {
+        if (lockRows) {
+          return
+        }
+
+        setEditing(false)
+        setActiveCell((a) => {
+          const row = Math.min(
+            dataRef.current.length - 2 - rowMax + rowMin,
+            rowMin
+          )
+
+          if (row < 0) {
+            return null
+          }
+
+          return a && { col: a.col, row }
+        })
+        setSelectionCell(null)
+        onChange(
+          [
+            ...dataRef.current.slice(0, rowMin),
+            ...dataRef.current.slice(rowMax + 1),
+          ],
+          [
+            {
+              type: 'DELETE',
+              fromRowIndex: rowMin,
+              toRowIndex: rowMax + 1,
+              data: dataRef.current.slice(rowMin, rowMax + 1),
+            },
+          ]
+        )
+      },
+      [lockRows, onChange, setActiveCell, setSelectionCell]
+    )
+
+    const deleteSelection = useCallback(
+      (_smartDelete = true) => {
+        const smartDelete = _smartDelete && !disableSmartDelete
+        if (!activeCell) {
+          return
+        }
+
+        const min: Cell = selection?.min || activeCell
+        const max: Cell = selection?.max || activeCell
+
+        if (
+          data
+            .slice(min.row, max.row + 1)
+            .every((rowData, i) =>
+              columns.every((column) =>
+                column.isCellEmpty({ rowData, rowIndex: i + min.row })
+              )
+            )
+        ) {
+          if (smartDelete) {
+            deleteRows(min.row, max.row)
+          }
+          return
+        }
+
+        const newData = [...data]
+
+        for (let row = min.row; row <= max.row; ++row) {
+          for (let col = min.col; col <= max.col; ++col) {
+            if (!isCellDisabled({ col, row })) {
+              const { deleteValue = ({ rowData }) => rowData } =
+                columns[col + 1]
+              newData[row] = deleteValue({
+                rowData: newData[row],
+                rowIndex: row,
+              })
             }
-
-            return {
-              col: columnRights.findIndex((right) => x < right) - 1,
-              row: getRowIndex(y - headerRowHeight),
-            }
           }
+        }
 
-          return null
-        },
-        [
-          columnRights,
-          columnWidths,
-          data.length,
-          getInnerBoundingClientRect,
-          getOuterBoundingClientRect,
-          headerRowHeight,
-          hasStickyRightColumn,
-          getRowIndex,
-        ]
-      )
-
-      const dataRef = useRef(data)
-      dataRef.current = data
-
-      const isCellDisabled = useCallback(
-        (cell: Cell): boolean => {
-          const disabled = columns[cell.col + 1].disabled
-
-          return Boolean(
-            typeof disabled === 'function'
-              ? disabled({
-                  rowData: dataRef.current[cell.row],
-                  rowIndex: cell.row,
-                })
-              : disabled
-          )
-        },
-        [columns]
-      )
-
-      const insertRowAfter = useCallback(
-        (row: number, count = 1) => {
-          if (lockRows) {
-            return
-          }
-
-          setSelectionCell(null)
-          setEditing(false)
-
-          onChange(
-            [
-              ...dataRef.current.slice(0, row + 1),
-              ...new Array(count).fill(0).map(createRow),
-              ...dataRef.current.slice(row + 1),
-            ],
-            [
-              {
-                type: 'CREATE',
-                fromRowIndex: row + 1,
-                toRowIndex: row + 1 + count,
-              },
-            ]
-          )
-          setActiveCell((a) => ({
-            col: a?.col || 0,
-            row: row + count,
-            doNotScrollX: true,
-          }))
-        },
-        [createRow, lockRows, onChange, setActiveCell, setSelectionCell]
-      )
-
-      const duplicateRows = useCallback(
-        (rowMin: number, rowMax: number = rowMin) => {
-          if (lockRows) {
-            return
-          }
-
-          onChange(
-            [
-              ...dataRef.current.slice(0, rowMax + 1),
-              ...dataRef.current
-                .slice(rowMin, rowMax + 1)
-                .map((rowData, i) =>
-                  duplicateRow({ rowData, rowIndex: i + rowMin })
-                ),
-              ...dataRef.current.slice(rowMax + 1),
-            ],
-            [
-              {
-                type: 'CREATE',
-                fromRowIndex: rowMax + 1,
-                toRowIndex: rowMax + 2 + rowMax - rowMin,
-              },
-            ]
-          )
-          setActiveCell({ col: 0, row: rowMax + 1, doNotScrollX: true })
+        if (smartDelete && deepEqual(newData, data)) {
+          setActiveCell({ col: 0, row: min.row, doNotScrollX: true })
           setSelectionCell({
             col: columns.length - (hasStickyRightColumn ? 3 : 2),
-            row: 2 * rowMax - rowMin + 1,
+            row: max.row,
             doNotScrollX: true,
           })
-          setEditing(false)
-        },
-        [
-          columns.length,
-          duplicateRow,
-          lockRows,
-          onChange,
-          setActiveCell,
-          setSelectionCell,
-          hasStickyRightColumn,
-        ]
-      )
-
-      // Scroll to any given cell making sure it is in view
-      const scrollTo = useCallback(
-        (cell: Cell & ScrollBehavior) => {
-          if (!height || !width) {
-            return
-          }
-
-          if (!cell.doNotScrollY) {
-            // Align top
-            const topMax = getRowSize(cell.row).top
-            // Align bottom
-            const topMin =
-              getRowSize(cell.row).top +
-              getRowSize(cell.row).height +
-              headerRowHeight -
-              height +
-              1
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const scrollTop = outerRef.current!.scrollTop
-
-            if (scrollTop > topMax) {
-              outerRef.current!.scrollTop = topMax
-            } else if (scrollTop < topMin) {
-              outerRef.current!.scrollTop = topMin
-            }
-          }
-
-          if (
-            columnRights &&
-            columnWidths &&
-            outerRef.current &&
-            !cell.doNotScrollX
-          ) {
-            // Align left
-            const leftMax = columnRights[cell.col] - columnRights[0]
-            // Align right
-            const leftMin =
-              columnRights[cell.col] +
-              columnWidths[cell.col + 1] +
-              (hasStickyRightColumn
-                ? columnWidths[columnWidths.length - 1]
-                : 0) -
-              width +
-              1
-
-            const scrollLeft = outerRef.current.scrollLeft
-
-            if (scrollLeft > leftMax) {
-              outerRef.current.scrollLeft = leftMax
-            } else if (scrollLeft < leftMin) {
-              outerRef.current.scrollLeft = leftMin
-            }
-          }
-        },
-        [
-          height,
-          width,
-          headerRowHeight,
-          columnRights,
-          columnWidths,
-          getRowSize,
-          hasStickyRightColumn,
-        ]
-      )
-
-      // Scroll to the selectionCell cell when it changes
-      useEffect(() => {
-        if (selectionCell) {
-          scrollTo(selectionCell)
+          return
         }
-      }, [selectionCell, scrollTo])
 
-      // Scroll to the active cell when it changes
-      useEffect(() => {
-        if (activeCell) {
-          scrollTo(activeCell)
-        }
-      }, [activeCell, scrollTo])
+        onChange(newData, [
+          {
+            type: 'UPDATE',
+            fromRowIndex: min.row,
+            toRowIndex: max.row + 1,
+            data: newData.slice(min.row, max.row + 1),
+          },
+        ])
+      },
+      [
+        activeCell,
+        columns,
+        data,
+        deleteRows,
+        isCellDisabled,
+        onChange,
+        selection?.max,
+        selection?.min,
+        setActiveCell,
+        setSelectionCell,
+        hasStickyRightColumn,
+        disableSmartDelete,
+      ]
+    )
 
-      const setRowData = useCallback(
-        (rowIndex: number, item: T) => {
-          onChange(
-            [
-              ...dataRef.current?.slice(0, rowIndex),
-              item,
-              ...dataRef.current?.slice(rowIndex + 1),
-            ],
-            [
-              {
-                type: 'UPDATE',
-                fromRowIndex: rowIndex,
-                toRowIndex: rowIndex + 1,
-              },
-            ]
-          )
-        },
-        [onChange]
-      )
-
-      const deleteRows = useCallback(
-        (rowMin: number, rowMax: number = rowMin) => {
-          if (lockRows) {
-            return
+    const stopEditing = useCallback(
+      ({ nextRow = true } = {}) => {
+        if (activeCell?.row === dataRef.current.length - 1) {
+          if (nextRow && autoAddRow) {
+            insertRowAfter(activeCell.row)
+          } else {
+            setEditing(false)
           }
-
+        } else {
           setEditing(false)
-          setActiveCell((a) => {
-            const row = Math.min(
-              dataRef.current.length - 2 - rowMax + rowMin,
-              rowMin
-            )
 
-            if (row < 0) {
-              return null
-            }
-
-            return a && { col: a.col, row }
-          })
-          setSelectionCell(null)
-          onChange(
-            [
-              ...dataRef.current.slice(0, rowMin),
-              ...dataRef.current.slice(rowMax + 1),
-            ],
-            [
-              {
-                type: 'DELETE',
-                fromRowIndex: rowMin,
-                toRowIndex: rowMax + 1,
-              },
-            ]
-          )
-        },
-        [lockRows, onChange, setActiveCell, setSelectionCell]
-      )
-
-      const deleteSelection = useCallback(
-        (_smartDelete = true) => {
-          const smartDelete = _smartDelete && !disableSmartDelete
-          if (!activeCell) {
-            return
+          if (nextRow) {
+            setActiveCell((a) => a && { col: a.col, row: a.row + 1 })
           }
+        }
+      },
+      [activeCell?.row, autoAddRow, insertRowAfter, setActiveCell]
+    )
+
+    const onCopy = useCallback(
+      async (event?: ClipboardEvent) => {
+        if (!editing && activeCell) {
+          const copyData: Array<Array<number | string | null>> = []
 
           const min: Cell = selection?.min || activeCell
           const max: Cell = selection?.max || activeCell
 
-          if (
-            data
-              .slice(min.row, max.row + 1)
-              .every((rowData, i) =>
-                columns.every((column) =>
-                  column.isCellEmpty({ rowData, rowIndex: i + min.row })
-                )
-              )
-          ) {
-            if (smartDelete) {
-              deleteRows(min.row, max.row)
-            }
-            return
-          }
-
-          const newData = [...data]
-
           for (let row = min.row; row <= max.row; ++row) {
+            copyData.push([])
+
             for (let col = min.col; col <= max.col; ++col) {
-              if (!isCellDisabled({ col, row })) {
-                const { deleteValue = ({ rowData }) => rowData } =
-                  columns[col + 1]
-                newData[row] = deleteValue({
-                  rowData: newData[row],
-                  rowIndex: row,
-                })
-              }
+              const { copyValue = () => null } = columns[col + 1]
+              copyData[row - min.row].push(
+                copyValue({ rowData: data[row], rowIndex: row })
+              )
             }
           }
 
-          if (smartDelete && deepEqual(newData, data)) {
-            setActiveCell({ col: 0, row: min.row, doNotScrollX: true })
-            setSelectionCell({
-              col: columns.length - (hasStickyRightColumn ? 3 : 2),
-              row: max.row,
-              doNotScrollX: true,
-            })
+          const textPlain = copyData.map((row) => row.join('\t')).join('\n')
+          const textHtml = `<table>${copyData
+            .map(
+              (row) =>
+                `<tr>${row
+                  .map(
+                    (cell) =>
+                      `<td>${encodeHtml(String(cell ?? '')).replace(
+                        /\n/g,
+                        '<br/>'
+                      )}</td>`
+                  )
+                  .join('')}</tr>`
+            )
+            .join('')}</table>`
+
+          if (event !== undefined) {
+            event.clipboardData?.setData('text/plain', textPlain)
+            event.clipboardData?.setData('text/html', textHtml)
+            event.preventDefault()
             return
           }
 
-          onChange(newData, [
-            {
-              type: 'UPDATE',
-              fromRowIndex: min.row,
-              toRowIndex: max.row + 1,
-            },
-          ])
-        },
-        [
-          activeCell,
-          columns,
-          data,
-          deleteRows,
-          isCellDisabled,
-          onChange,
-          selection?.max,
-          selection?.min,
-          setActiveCell,
-          setSelectionCell,
-          hasStickyRightColumn,
-        ]
-      )
+          let success = false
+          if (navigator.clipboard.write !== undefined) {
+            const textBlob = new Blob([textPlain], {
+              type: 'text/plain',
+            })
+            const htmlBlob = new Blob([textHtml], { type: 'text/html' })
+            const clipboardData = [
+              new ClipboardItem({
+                'text/plain': textBlob,
+                'text/html': htmlBlob,
+              }),
+            ]
+            await navigator.clipboard.write(clipboardData).then(() => {
+              success = true
+            })
+          } else if (navigator.clipboard.writeText !== undefined) {
+            await navigator.clipboard.writeText(textPlain).then(() => {
+              success = true
+            })
+          } else if (document.execCommand !== undefined) {
+            const result = document.execCommand('copy')
+            if (result) {
+              success = true
+            }
+          }
+          if (!success) {
+            alert(
+              'This action is unavailable in your browser, but you can still use Ctrl+C for copy or Ctrl+X for cut'
+            )
+          }
+        }
+      },
+      [activeCell, columns, data, editing, selection]
+    )
+    useDocumentEventListener('copy', onCopy)
 
-      const stopEditing = useCallback(
-        ({ nextRow = true } = {}) => {
-          if (activeCell?.row === dataRef.current.length - 1) {
-            if (nextRow && autoAddRow) {
-              insertRowAfter(activeCell.row)
-            } else {
-              setEditing(false)
+    const onCopyWithHeaders = useCallback(async () => {
+      if (!editing && activeCell) {
+        const copyData: Array<Array<number | string | null>> = []
+        const headerData: Array<string | null> = []
+
+        const min: Cell = selection?.min || activeCell
+        const max: Cell = selection?.max || activeCell
+
+        // Extract headers for selected columns
+        for (let col = min.col; col <= max.col; ++col) {
+          const columnTitle = columns[col + 1]?.title
+          let headerText: string
+
+          if (typeof columnTitle === 'string') {
+            headerText = columnTitle
+          } else if (typeof columnTitle === 'number') {
+            headerText = String(columnTitle)
+          } else if (columnTitle && typeof columnTitle === 'object') {
+            // For React elements, try to extract text content
+            try {
+              headerText = String(columnTitle)
+            } catch {
+              headerText = `Column ${col + 1}`
             }
           } else {
-            setEditing(false)
-
-            if (nextRow) {
-              setActiveCell((a) => a && { col: a.col, row: a.row + 1 })
-            }
+            headerText = `Column ${col + 1}`
           }
-        },
-        [activeCell?.row, autoAddRow, insertRowAfter, setActiveCell]
-      )
 
-      const onCopy = useCallback(
-        async (event?: ClipboardEvent) => {
-          if (!editing && activeCell) {
-            const copyData: Array<Array<number | string | null>> = []
+          headerData.push(headerText)
+        }
 
-            const min: Cell = selection?.min || activeCell
-            const max: Cell = selection?.max || activeCell
+        // Add header row to copy data
+        copyData.push(headerData)
 
-            for (let row = min.row; row <= max.row; ++row) {
-              copyData.push([])
+        // Extract data for selected cells
+        for (let row = min.row; row <= max.row; ++row) {
+          copyData.push([])
 
-              for (let col = min.col; col <= max.col; ++col) {
-                const { copyValue = () => null } = columns[col + 1]
-                copyData[row - min.row].push(
-                  copyValue({ rowData: data[row], rowIndex: row })
-                )
-              }
-            }
-
-            const textPlain = copyData.map((row) => row.join('\t')).join('\n')
-            const textHtml = `<table>${copyData
-              .map(
-                (row) =>
-                  `<tr>${row
-                    .map(
-                      (cell) =>
-                        `<td>${encodeHtml(String(cell ?? '')).replace(
-                          /\n/g,
-                          '<br/>'
-                        )}</td>`
-                    )
-                    .join('')}</tr>`
-              )
-              .join('')}</table>`
-
-            if (event !== undefined) {
-              event.clipboardData?.setData('text/plain', textPlain)
-              event.clipboardData?.setData('text/html', textHtml)
-              event.preventDefault()
-              return
-            }
-
-            let success = false
-            if (navigator.clipboard.write !== undefined) {
-              const textBlob = new Blob([textPlain], {
-                type: 'text/plain',
-              })
-              const htmlBlob = new Blob([textHtml], { type: 'text/html' })
-              const clipboardData = [
-                new ClipboardItem({
-                  'text/plain': textBlob,
-                  'text/html': htmlBlob,
-                }),
-              ]
-              await navigator.clipboard.write(clipboardData).then(() => {
-                success = true
-              })
-            } else if (navigator.clipboard.writeText !== undefined) {
-              await navigator.clipboard.writeText(textPlain).then(() => {
-                success = true
-              })
-            } else if (document.execCommand !== undefined) {
-              const result = document.execCommand('copy')
-              if (result) {
-                success = true
-              }
-            }
-            if (!success) {
-              alert(
-                'This action is unavailable in your browser, but you can still use Ctrl+C for copy or Ctrl+X for cut'
-              )
-            }
-          }
-        },
-        [activeCell, columns, data, editing, selection]
-      )
-      useDocumentEventListener('copy', onCopy)
-
-      const onCopyWithHeaders = useCallback(
-        async () => {
-          if (!editing && activeCell) {
-            const copyData: Array<Array<number | string | null>> = []
-            const headerData: Array<string | null> = []
-
-            const min: Cell = selection?.min || activeCell
-            const max: Cell = selection?.max || activeCell
-
-            // Extract headers for selected columns
-            for (let col = min.col; col <= max.col; ++col) {
-              const columnTitle = columns[col + 1]?.title
-              let headerText: string
-              
-              if (typeof columnTitle === 'string') {
-                headerText = columnTitle
-              } else if (typeof columnTitle === 'number') {
-                headerText = String(columnTitle)
-              } else if (columnTitle && typeof columnTitle === 'object') {
-                // For React elements, try to extract text content
-                try {
-                  headerText = String(columnTitle)
-                } catch {
-                  headerText = `Column ${col + 1}`
-                }
-              } else {
-                headerText = `Column ${col + 1}`
-              }
-              
-              headerData.push(headerText)
-            }
-
-            // Add header row to copy data
-            copyData.push(headerData)
-
-            // Extract data for selected cells
-            for (let row = min.row; row <= max.row; ++row) {
-              copyData.push([])
-
-              for (let col = min.col; col <= max.col; ++col) {
-                const { copyValue = () => null } = columns[col + 1]
-                copyData[row - min.row + 1].push(
-                  copyValue({ rowData: data[row], rowIndex: row })
-                )
-              }
-            }
-
-            const textPlain = copyData.map((row) => row.join('\t')).join('\n')
-            const textHtml = `<table>${copyData
-              .map(
-                (row, index) =>
-                  `<tr>${row
-                    .map(
-                      (cell) =>
-                        `<t${index === 0 ? 'h' : 'd'}>${encodeHtml(String(cell ?? '')).replace(
-                          /\n/g,
-                          '<br/>'
-                        )}</t${index === 0 ? 'h' : 'd'}>`
-                    )
-                    .join('')}</tr>`
-              )
-              .join('')}</table>`
-
-            let success = false
-            if (navigator.clipboard.write !== undefined) {
-              const textBlob = new Blob([textPlain], {
-                type: 'text/plain',
-              })
-              const htmlBlob = new Blob([textHtml], { type: 'text/html' })
-              const clipboardData = [
-                new ClipboardItem({
-                  'text/plain': textBlob,
-                  'text/html': htmlBlob,
-                }),
-              ]
-              await navigator.clipboard.write(clipboardData).then(() => {
-                success = true
-              })
-            } else if (navigator.clipboard.writeText !== undefined) {
-              await navigator.clipboard.writeText(textPlain).then(() => {
-                success = true
-              })
-            } else if (document.execCommand !== undefined) {
-              const result = document.execCommand('copy')
-              if (result) {
-                success = true
-              }
-            }
-            if (!success) {
-              alert(
-                'This action is unavailable in your browser, but you can still use Ctrl+C for copy or Ctrl+X for cut'
-              )
-            }
-          }
-        },
-        [activeCell, columns, data, editing, selection]
-      )
-
-      const onCut = useCallback(
-        (event?: ClipboardEvent) => {
-          if (!editing && activeCell) {
-            onCopy(event)
-            deleteSelection(false)
-          }
-        },
-        [activeCell, deleteSelection, editing, onCopy]
-      )
-      useDocumentEventListener('cut', onCut)
-
-      const applyPasteDataToDatasheet = useCallback(
-        async (pasteData: string[][]) => {
-          if (!editing && activeCell) {
-            const min: Cell = selection?.min || activeCell
-            const max: Cell = selection?.max || activeCell
-
-            const results = await Promise.all(
-              pasteData[0].map((_, columnIndex) => {
-                const prePasteValues =
-                  columns[min.col + columnIndex + 1]?.prePasteValues
-
-                const values = pasteData.map((row) => row[columnIndex])
-                return prePasteValues?.(values) ?? values
-              })
+          for (let col = min.col; col <= max.col; ++col) {
+            const { copyValue = () => null } = columns[col + 1]
+            copyData[row - min.row + 1].push(
+              copyValue({ rowData: data[row], rowIndex: row })
             )
+          }
+        }
 
-            pasteData = pasteData.map((_, rowIndex) =>
-              results.map((column) => column[rowIndex])
-            )
+        const textPlain = copyData.map((row) => row.join('\t')).join('\n')
+        const textHtml = `<table>${copyData
+          .map(
+            (row, index) =>
+              `<tr>${row
+                .map(
+                  (cell) =>
+                    `<t${index === 0 ? 'h' : 'd'}>${encodeHtml(
+                      String(cell ?? '')
+                    ).replace(/\n/g, '<br/>')}</t${index === 0 ? 'h' : 'd'}>`
+                )
+                .join('')}</tr>`
+          )
+          .join('')}</table>`
 
-            // Paste single row
+        let success = false
+        if (navigator.clipboard.write !== undefined) {
+          const textBlob = new Blob([textPlain], {
+            type: 'text/plain',
+          })
+          const htmlBlob = new Blob([textHtml], { type: 'text/html' })
+          const clipboardData = [
+            new ClipboardItem({
+              'text/plain': textBlob,
+              'text/html': htmlBlob,
+            }),
+          ]
+          await navigator.clipboard.write(clipboardData).then(() => {
+            success = true
+          })
+        } else if (navigator.clipboard.writeText !== undefined) {
+          await navigator.clipboard.writeText(textPlain).then(() => {
+            success = true
+          })
+        } else if (document.execCommand !== undefined) {
+          const result = document.execCommand('copy')
+          if (result) {
+            success = true
+          }
+        }
+        if (!success) {
+          alert(
+            'This action is unavailable in your browser, but you can still use Ctrl+C for copy or Ctrl+X for cut'
+          )
+        }
+      }
+    }, [activeCell, columns, data, editing, selection])
+
+    const onCut = useCallback(
+      (event?: ClipboardEvent) => {
+        if (!editing && activeCell) {
+          onCopy(event)
+          deleteSelection(false)
+        }
+      },
+      [activeCell, deleteSelection, editing, onCopy]
+    )
+    useDocumentEventListener('cut', onCut)
+
+    const applyPasteDataToDatasheet = useCallback(
+      async (pasteData: string[][]) => {
+        if (!editing && activeCell) {
+          const min: Cell = selection?.min || activeCell
+          const max: Cell = selection?.max || activeCell
+
+          const results = await Promise.all(
+            pasteData[0].map((_, columnIndex) => {
+              const prePasteValues =
+                columns[min.col + columnIndex + 1]?.prePasteValues
+
+              const values = pasteData.map((row) => row[columnIndex])
+              return prePasteValues?.(values) ?? values
+            })
+          )
+
+          pasteData = pasteData.map((_, rowIndex) =>
+            results.map((column) => column[rowIndex])
+          )
+
+          // Paste single row
           // Paste single row
           if (pasteData.length === 1) {
             const newData = [...data]
@@ -824,15 +827,10 @@ export const DataSheetGrid = React.memo(
               columnIndex < pasteData[0].length;
               columnIndex++
             ) {
-              const pasteValue =
-                columns[min.col + columnIndex + 1]?.pasteValue
+              const pasteValue = columns[min.col + columnIndex + 1]?.pasteValue
 
               if (pasteValue) {
-                for (
-                  let rowIndex = min.row;
-                  rowIndex <= max.row;
-                  rowIndex++
-                ) {
+                for (let rowIndex = min.row; rowIndex <= max.row; rowIndex++) {
                   if (
                     !isCellDisabled({
                       col: columnIndex + min.col,
@@ -854,6 +852,7 @@ export const DataSheetGrid = React.memo(
                 type: 'UPDATE',
                 fromRowIndex: min.row,
                 toRowIndex: max.row + 1,
+                data: newData.slice(min.row, max.row + 1),
               },
             ])
             setActiveCell({ col: min.col, row: min.row })
@@ -887,8 +886,7 @@ export const DataSheetGrid = React.memo(
                 columns.length - (hasStickyRightColumn ? 2 : 1);
               columnIndex++
             ) {
-              const pasteValue =
-                columns[min.col + columnIndex + 1]?.pasteValue
+              const pasteValue = columns[min.col + columnIndex + 1]?.pasteValue
 
               if (pasteValue) {
                 for (
@@ -912,14 +910,21 @@ export const DataSheetGrid = React.memo(
               }
             }
 
-            const operations: Operation[] = [
+            const fromRowIndex = min.row
+            const toRowIndex =
+              min.row +
+              pasteData.length -
+              (!lockRows && missingRows > 0 ? missingRows : 0)
+
+            const operations: Operation<T>[] = [
               {
                 type: 'UPDATE',
-                fromRowIndex: min.row,
-                toRowIndex:
-                  min.row +
-                  pasteData.length -
-                  (!lockRows && missingRows > 0 ? missingRows : 0),
+                fromRowIndex: fromRowIndex,
+                toRowIndex: toRowIndex,
+                data: newData.slice(fromRowIndex, toRowIndex),
+                // min.row +
+                // pasteData.length -
+                // (!lockRows && missingRows > 0 ? missingRows : 0),
               },
             ]
 
@@ -928,6 +933,7 @@ export const DataSheetGrid = React.memo(
                 type: 'CREATE',
                 fromRowIndex: min.row + pasteData.length - missingRows,
                 toRowIndex: min.row + pasteData.length,
+                data: [],
               })
             }
 
@@ -973,9 +979,7 @@ export const DataSheetGrid = React.memo(
               event.clipboardData?.getData('text/plain')
             )
           } else if (event.clipboardData?.types.includes('text')) {
-            pasteData = parseTextPlainData(
-              event.clipboardData?.getData('text')
-            )
+            pasteData = parseTextPlainData(event.clipboardData?.getData('text'))
           }
           applyPasteDataToDatasheet(pasteData)
           event.preventDefault()
@@ -1084,10 +1088,7 @@ export const DataSheetGrid = React.memo(
                 (rightClickInSelection || rightClickOnSelectedHeaders) &&
                 activeCell
                   ? activeCell.col
-                  : Math.max(
-                      0,
-                      clickOnStickyRightColumn ? 0 : cursorIndex.col
-                    ),
+                  : Math.max(0, clickOnStickyRightColumn ? 0 : cursorIndex.col),
               row:
                 (rightClickInSelection ||
                   rightClickOnSelectedGutter ||
@@ -1101,8 +1102,7 @@ export const DataSheetGrid = React.memo(
                   cursorIndex.col === -1
               ),
               doNotScrollY: Boolean(
-                (rightClickInSelection && activeCell) ||
-                  cursorIndex.row === -1
+                (rightClickInSelection && activeCell) || cursorIndex.row === -1
               ),
             }
           )
@@ -1246,8 +1246,7 @@ export const DataSheetGrid = React.memo(
               columnIndex < copyData[0].length;
               columnIndex++
             ) {
-              const pasteValue =
-                columns[min.col + columnIndex + 1]?.pasteValue
+              const pasteValue = columns[min.col + columnIndex + 1]?.pasteValue
 
               if (pasteValue) {
                 for (
@@ -1279,6 +1278,10 @@ export const DataSheetGrid = React.memo(
                 type: 'UPDATE',
                 fromRowIndex: max.row + 1,
                 toRowIndex: max.row + 1 + expandSelectionRowsCount,
+                data: newData.slice(
+                  min.row,
+                  max.row + 1 + expandSelectionRowsCount
+                ),
               },
             ])
           })
@@ -1394,8 +1397,7 @@ export const DataSheetGrid = React.memo(
         if (
           event.key === 'Tab' &&
           !event.shiftKey &&
-          activeCell.col ===
-            columns.length - (hasStickyRightColumn ? 3 : 2) &&
+          activeCell.col === columns.length - (hasStickyRightColumn ? 3 : 2) &&
           !columns[activeCell.col + 1].disableKeys
         ) {
           // Last row
@@ -1614,7 +1616,7 @@ export const DataSheetGrid = React.memo(
       ]
     )
     useDocumentEventListener('keydown', onKeyDown)
-
+    ///// can refactor?
     const onContextMenu = useCallback(
       (event: MouseEvent) => {
         const clickInside =
@@ -1777,7 +1779,7 @@ export const DataSheetGrid = React.memo(
       onCopyWithHeaders,
       applyPasteDataToDatasheet,
     ])
-
+    ///// can refactor?
     const contextMenuItemsRef = useRef(contextMenuItems)
     contextMenuItemsRef.current = contextMenuItems
 
@@ -1786,11 +1788,20 @@ export const DataSheetGrid = React.memo(
       []
     )
 
+    const idRowPointer = useMemo(() => {
+      const idPointerMap = new Map<string | number, number>()
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i]
+        const id = row.id
+        idPointerMap.set(id, i)
+      }
+      return idPointerMap
+    }, [data])
+
     useImperativeHandle(ref, () => ({
       activeCell: getCellWithId(activeCell, columns),
       selection: getSelectionWithId(
-        selection ??
-          (activeCell ? { min: activeCell, max: activeCell } : null),
+        selection ?? (activeCell ? { min: activeCell, max: activeCell } : null),
         columns
       ),
       setSelection: (value) => {
@@ -1818,6 +1829,22 @@ export const DataSheetGrid = React.memo(
         setEditing(false)
         setSelectionMode({ columns: false, active: false, rows: false })
         setSelectionCell(null)
+      },
+      updateRowWithId: (id, value) => {
+        const rowIndex = idRowPointer.get(id)
+        if (rowIndex === undefined) return
+        setRowData(rowIndex, value)
+
+        // const selection = getSelection(
+        //   value,
+        //   columns.length - (hasStickyRightColumn ? 2 : 1),
+        //   data.length,
+        //   columns
+        // )
+        // setActiveCell(selection?.min || null)
+        // setEditing(false)
+        // setSelectionMode({ columns: false, active: false, rows: false })
+        // setSelectionCell(selection?.max || null)
       },
     }))
 
@@ -1848,7 +1875,7 @@ export const DataSheetGrid = React.memo(
 
     useEffect(() => {
       callbacksRef.current.onActiveCellChange({
-        cell: getCellWithId(activeCell, columns),
+        cell: getCellWithId(activeCell as Cell, columns),
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeCell?.col, activeCell?.row, columns])
@@ -1955,13 +1982,13 @@ export const DataSheetGrid = React.memo(
           />
         )}
       </div>
-          )
-    }
-  )
-) as <T extends any>(
-  props: DataSheetGridProps<T> & { ref?: React.ForwardedRef<DataSheetGridRef> }
+    )
+  })
+) as <T>(
+  props: DataSheetGridProps<T> & {
+    ref?: React.ForwardedRef<DataSheetGridRef<T>>
+  }
 ) => React.ReactElement
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 DataSheetGrid.displayName = 'DataSheetGrid'

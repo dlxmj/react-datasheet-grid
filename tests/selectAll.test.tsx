@@ -24,7 +24,7 @@ const columns: Column[] = [
 ]
 
 test('Select all with Cmd+A', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 0, row: 0 }))
@@ -45,7 +45,7 @@ test('Select all with Cmd+A', () => {
 })
 
 test('Select all with Ctrl+A', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 0, row: 0 }))

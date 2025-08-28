@@ -20,7 +20,7 @@ const columns: Column[] = [
 ]
 
 test('Insert row with Shift+Enter', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -63,7 +63,7 @@ test('Insert row with Shift+Enter', () => {
 })
 
 test('Insert row from selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -103,7 +103,7 @@ test('Insert row from selection', () => {
 })
 
 test('Insert row with locked rows', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(

@@ -20,7 +20,7 @@ const columns: Column[] = [
 ]
 
 test('Add single row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -71,7 +71,7 @@ test('No add button when addRowsComponent receives false', () => {
 })
 
 test('Add multiple rows', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(

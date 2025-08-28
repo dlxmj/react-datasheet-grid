@@ -20,7 +20,7 @@ const columns: Column[] = [
 ]
 
 test('Backspace to delete cell', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -49,7 +49,7 @@ test('Backspace to delete cell', () => {
 })
 
 test('Delete to delete cell', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -78,7 +78,7 @@ test('Delete to delete cell', () => {
 })
 
 test('Delete selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -112,7 +112,7 @@ test('Delete selection', () => {
 })
 
 test('Delete entire grid', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -146,7 +146,7 @@ test('Delete entire grid', () => {
 })
 
 test('Delete disabled cells', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -183,7 +183,7 @@ test('Delete disabled cells', () => {
 })
 
 test('Delete partially empty selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -229,7 +229,7 @@ test('Delete partially empty selection', () => {
 })
 
 test('Delete empty selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -269,7 +269,7 @@ test('Delete empty selection', () => {
 })
 
 test('Delete empty cell', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -303,7 +303,7 @@ test('Delete empty cell', () => {
 })
 
 test('Delete empty row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -330,7 +330,7 @@ test('Delete empty row', () => {
 })
 
 test('Delete empty rows', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -364,7 +364,7 @@ test('Delete empty rows', () => {
 })
 
 test('Delete empty locked rows', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(

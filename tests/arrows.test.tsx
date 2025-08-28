@@ -27,7 +27,7 @@ const columns: Column[] = [
 ]
 
 test('Up from cell', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 1, row: 1 }))
@@ -41,7 +41,7 @@ test('Up from cell', () => {
 })
 
 test('Up from top row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 1, row: 0 }))
@@ -55,7 +55,7 @@ test('Up from top row', () => {
 })
 
 test('Up from selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() =>
@@ -87,7 +87,7 @@ test('Up from selection', () => {
 })
 
 test('Cmd + Up', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 1, row: 2 }))
@@ -101,7 +101,7 @@ test('Cmd + Up', () => {
 })
 
 test('Ctrl + Up', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 1, row: 2 }))
@@ -115,7 +115,7 @@ test('Ctrl + Up', () => {
 })
 
 test('Shift + Up', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 1, row: 2 }))
@@ -136,7 +136,7 @@ test('Shift + Up', () => {
 })
 
 test('Shift + Up from selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() =>
@@ -162,7 +162,7 @@ test('Shift + Up from selection', () => {
 })
 
 test('Shift + Up from selection already at the top', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() =>

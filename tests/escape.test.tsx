@@ -24,7 +24,7 @@ const columns: Column[] = [
 ]
 
 test('Escape from editing', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 0, row: 0 }))
@@ -39,7 +39,7 @@ test('Escape from editing', () => {
 })
 
 test('Escape from selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() =>
@@ -65,7 +65,7 @@ test('Escape from selection', () => {
 })
 
 test('Escape from active', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} />)
 
   act(() => ref.current.setActiveCell({ col: 0, row: 0 }))

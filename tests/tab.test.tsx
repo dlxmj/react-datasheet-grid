@@ -24,7 +24,7 @@ const columns: Column[] = [
 ]
 
 test('Tab from outside', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(
     <>
       <input data-testid="input-before" />
@@ -44,7 +44,7 @@ test('Tab from outside', () => {
 })
 
 test('Tab from cell', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} lockRows />)
 
   act(() => ref.current.setActiveCell({ col: 0, row: 1 }))
@@ -58,7 +58,7 @@ test('Tab from cell', () => {
 })
 
 test('Tab from last cell of row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(<DataSheetGrid value={data} columns={columns} ref={ref} lockRows />)
 
   act(() => ref.current.setActiveCell({ col: 1, row: 0 }))
@@ -72,7 +72,7 @@ test('Tab from last cell of row', () => {
 })
 
 test('Tab from last cell of last row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(
     <>
       <input data-testid="input-before" />
@@ -89,7 +89,7 @@ test('Tab from last cell of last row', () => {
 })
 
 test('Shift tab from outside', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(
     <>
       <input data-testid="input-before" />
@@ -109,7 +109,7 @@ test('Shift tab from outside', () => {
 })
 
 test('Shift tab from cell', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(
     <>
       <input data-testid="input-before" />
@@ -129,7 +129,7 @@ test('Shift tab from cell', () => {
 })
 
 test('Shift tab from first cell of row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(
     <>
       <input data-testid="input-before" />
@@ -149,7 +149,7 @@ test('Shift tab from first cell of row', () => {
 })
 
 test('Shift tab from first cell of first row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   render(
     <>
       <input data-testid="input-before" />

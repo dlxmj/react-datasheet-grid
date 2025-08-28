@@ -21,10 +21,10 @@ const columns = [
 
 test('React 19 compatibility - DynamicDataSheetGrid renders without errors with ref', () => {
   let refWasSet = false
-  
+
   const TestComponent = () => {
-    const ref = useRef<DataSheetGridRef>(null)
-    
+    const ref = useRef<DataSheetGridRef<any>>(null)
+
     useEffect(() => {
       if (ref.current) {
         refWasSet = true
@@ -44,21 +44,21 @@ test('React 19 compatibility - DynamicDataSheetGrid renders without errors with 
   }
 
   render(<TestComponent />)
-  
+
   // Check that the grid container is rendered
   const gridContainer = document.querySelector('.dsg-container')
   expect(gridContainer).toBeInTheDocument()
-  
+
   // Verify the ref works
   expect(refWasSet).toBe(true)
 })
 
 test('React 19 compatibility - StaticDataSheetGrid works with ref as prop', () => {
   let refWasSet = false
-  
+
   const TestComponent = () => {
-    const ref = useRef<DataSheetGridRef>(null)
-    
+    const ref = useRef<DataSheetGridRef<any>>(null)
+
     useEffect(() => {
       if (ref.current) {
         refWasSet = true
@@ -67,9 +67,7 @@ test('React 19 compatibility - StaticDataSheetGrid works with ref as prop', () =
 
     return (
       <DataSheetGrid
-        value={[
-          { id: 1, firstName: 'Static', lastName: 'Grid' },
-        ]}
+        value={[{ id: 1, firstName: 'Static', lastName: 'Grid' }]}
         columns={columns}
         ref={ref}
       />
@@ -77,11 +75,11 @@ test('React 19 compatibility - StaticDataSheetGrid works with ref as prop', () =
   }
 
   render(<TestComponent />)
-  
+
   // Check that the grid container is rendered
   const gridContainer = document.querySelector('.dsg-container')
   expect(gridContainer).toBeInTheDocument()
-  
+
   // Verify the ref works
   expect(refWasSet).toBe(true)
 })
@@ -89,15 +87,13 @@ test('React 19 compatibility - StaticDataSheetGrid works with ref as prop', () =
 test('React 19 compatibility - forwardRef works across React versions', () => {
   // This test verifies that our forwardRef implementation works correctly
   // which ensures compatibility with both React 18 and React 19
-  
+
   const TestComponent = () => {
-    const ref = useRef<DataSheetGridRef>(null)
+    const ref = useRef<DataSheetGridRef<any>>(null)
 
     return (
       <DataSheetGrid
-        value={[
-          { id: 1, firstName: 'Test', lastName: 'User' },
-        ]}
+        value={[{ id: 1, firstName: 'Test', lastName: 'User' }]}
         columns={columns}
         ref={ref}
       />
@@ -105,11 +101,11 @@ test('React 19 compatibility - forwardRef works across React versions', () => {
   }
 
   const { container } = render(<TestComponent />)
-  
+
   // The component should render without errors
   expect(container).toBeInTheDocument()
-  
+
   // Should have grid elements
   const gridContainer = document.querySelector('.dsg-container')
   expect(gridContainer).toBeInTheDocument()
-}) 
+})

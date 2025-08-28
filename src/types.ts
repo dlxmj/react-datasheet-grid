@@ -93,7 +93,14 @@ export type AddRowsComponentProps = {
 
 export type ContextMenuItem =
   | {
-      type: 'INSERT_ROW_BELLOW' | 'DELETE_ROW' | 'DUPLICATE_ROW' | 'COPY' | 'CUT' | 'PASTE' | 'COPY_WITH_HEADERS'
+      type:
+        | 'INSERT_ROW_BELLOW'
+        | 'DELETE_ROW'
+        | 'DUPLICATE_ROW'
+        | 'COPY'
+        | 'CUT'
+        | 'PASTE'
+        | 'COPY_WITH_HEADERS'
       action: () => void
     }
   | {
@@ -111,10 +118,11 @@ export type ContextMenuComponentProps = {
   close: () => void
 }
 
-export type Operation = {
+export type Operation<T> = {
   type: 'UPDATE' | 'DELETE' | 'CREATE'
   fromRowIndex: number
   toRowIndex: number
+  data: T[]
 }
 
 export type DataSheetGridProps<T> = {
@@ -127,11 +135,11 @@ export type DataSheetGridProps<T> = {
   cellClassName?:
     | string
     | ((opt: {
-        rowData: unknown
+        rowData: T
         rowIndex: number
         columnId?: string
       }) => string | undefined)
-  onChange?: (value: T[], operations: Operation[]) => void
+  onChange?: (value: T[], operations: Operation<T>[]) => void
   columns?: Partial<Column<T, any, any>>[]
   gutterColumn?: SimpleColumn<T, any> | false
   stickyRightColumn?: SimpleColumn<T, any>
@@ -159,12 +167,15 @@ export type DataSheetGridProps<T> = {
   onScroll?: React.UIEventHandler<HTMLDivElement> | undefined
 }
 
-type CellWithIdInput = {
+export type CellWithIdInput = {
   col: number | string
   row: number
 }
 
-type SelectionWithIdInput = { min: CellWithIdInput; max: CellWithIdInput }
+export type SelectionWithIdInput = {
+  min: CellWithIdInput
+  max: CellWithIdInput
+}
 
 export type CellWithId = {
   colId?: string
@@ -174,9 +185,10 @@ export type CellWithId = {
 
 export type SelectionWithId = { min: CellWithId; max: CellWithId }
 
-export type DataSheetGridRef = {
-  activeCell: CellWithId | null
+export type DataSheetGridRef<T> = {
+  activeCell: CellWithId //| null
   selection: SelectionWithId | null
-  setActiveCell: (activeCell: CellWithIdInput | null) => void
-  setSelection: (selection: SelectionWithIdInput | null) => void
+  setActiveCell: (activeCell: CellWithIdInput /*| null */) => void
+  setSelection: (selection: SelectionWithIdInput /*| null */) => void
+  updateRowWithId: (id: string | number, data: T) => void
 }

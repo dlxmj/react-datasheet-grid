@@ -29,15 +29,15 @@ const lazyColumns: Column[] = [
 ]
 
 test('Type to replace', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -72,7 +72,7 @@ test('Type to replace', () => {
   act(() => {
     userEvent.keyboard('[Enter]')
   })
-  
+
   expect(ref.current.activeCell).toEqual({
     col: 0,
     colId: 'firstName',
@@ -81,15 +81,15 @@ test('Type to replace', () => {
 })
 
 test('Type to replace from selection', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -120,7 +120,7 @@ test('Type to replace from selection', () => {
     ]
     finalData = newData
   })
-  
+
   expect(finalData).toEqual([
     { firstName: 'Kimbal', lastName: 'Musk' },
     { firstName: 'Jeff', lastName: 'Bezos' },
@@ -128,15 +128,15 @@ test('Type to replace from selection', () => {
 })
 
 test('Enter to edit', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -162,7 +162,7 @@ test('Enter to edit', () => {
     ]
     finalData = newData
   })
-  
+
   expect(finalData).toEqual([
     { firstName: 'Elon', lastName: 'Musk' },
     { firstName: 'Jeffrey', lastName: 'Bezos' },
@@ -171,7 +171,7 @@ test('Enter to edit', () => {
   act(() => {
     userEvent.keyboard('[Enter]')
   })
-  
+
   expect(ref.current.activeCell).toEqual({
     col: 0,
     colId: 'firstName',
@@ -180,15 +180,15 @@ test('Enter to edit', () => {
 })
 
 test('Non-ascii character to edit', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -214,7 +214,7 @@ test('Non-ascii character to edit', () => {
     ]
     finalData = newData
   })
-  
+
   expect(finalData).toEqual([
     { firstName: 'Elon', lastName: 'Musk' },
     { firstName: 'ş', lastName: 'Bezos' },
@@ -222,15 +222,15 @@ test('Non-ascii character to edit', () => {
 })
 
 test('Lazy cell validate with Enter', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -252,7 +252,7 @@ test('Lazy cell validate with Enter', () => {
   act(() => {
     userEvent.keyboard('[Enter]')
   })
-  
+
   // Then simulate the update
   act(() => {
     const newData = [
@@ -261,12 +261,12 @@ test('Lazy cell validate with Enter', () => {
     ]
     finalData = newData
   })
-  
+
   expect(finalData).toEqual([
     { firstName: 'Kimbal', lastName: 'Musk' },
     { firstName: 'Jeff', lastName: 'Bezos' },
   ])
-  
+
   expect(ref.current.activeCell).toEqual({
     col: 0,
     colId: 'firstName',
@@ -275,15 +275,15 @@ test('Lazy cell validate with Enter', () => {
 })
 
 test('Lazy cell validate with Arrow', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -304,7 +304,7 @@ test('Lazy cell validate with Arrow', () => {
   act(() => {
     userEvent.keyboard('[ArrowUp]')
   })
-  
+
   // Simulate the update after navigation
   act(() => {
     const newData = [
@@ -313,12 +313,12 @@ test('Lazy cell validate with Arrow', () => {
     ]
     finalData = newData
   })
-  
+
   expect(finalData).toEqual([
     { firstName: 'Elon', lastName: 'Musk' },
     { firstName: 'Jeffrey', lastName: 'Bezos' },
   ])
-  
+
   expect(ref.current.activeCell).toEqual({
     col: 0,
     colId: 'firstName',
@@ -327,15 +327,15 @@ test('Lazy cell validate with Arrow', () => {
 })
 
 test('Lazy cell validate with Tab', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -356,7 +356,7 @@ test('Lazy cell validate with Tab', () => {
   act(() => {
     userEvent.tab()
   })
-  
+
   // Simulate the update after tab
   act(() => {
     const newData = [
@@ -365,12 +365,12 @@ test('Lazy cell validate with Tab', () => {
     ]
     finalData = newData
   })
-  
+
   expect(finalData).toEqual([
     { firstName: 'Kimbal', lastName: 'Musk' },
     { firstName: 'Jeff', lastName: 'Bezos' },
   ])
-  
+
   expect(ref.current.activeCell).toEqual({
     col: 1,
     colId: 'lastName',
@@ -379,18 +379,18 @@ test('Lazy cell validate with Tab', () => {
 })
 
 test('Lazy cell cancel with Escape', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const data = [
     { firstName: 'Elon', lastName: 'Musk' },
     { firstName: 'Jeff', lastName: 'Bezos' },
   ]
 
   render(
-    <DataSheetGrid 
-      value={data} 
-      onChange={() => {}} 
-      columns={lazyColumns} 
-      ref={ref} 
+    <DataSheetGrid
+      value={data}
+      onChange={() => {}}
+      columns={lazyColumns}
+      ref={ref}
     />
   )
 
@@ -399,7 +399,7 @@ test('Lazy cell cancel with Escape', () => {
   act(() => {
     userEvent.keyboard('[Escape]')
   })
-  
+
   // Data should remain unchanged
   expect(data).toEqual([
     { firstName: 'Elon', lastName: 'Musk' },
@@ -408,15 +408,15 @@ test('Lazy cell cancel with Escape', () => {
 })
 
 test('Edit cell auto add row', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   let finalData: any[] = []
-  
+
   const TestComponent = () => {
     const [data, setData] = useState([
       { firstName: 'Elon', lastName: 'Musk' },
       { firstName: 'Jeff', lastName: 'Bezos' },
     ])
-    
+
     return (
       <DataSheetGrid
         value={data}
@@ -460,7 +460,7 @@ test('Edit cell auto add row', () => {
     ]
     finalData = newData
   })
-  
+
   expect(finalData).toEqual([
     { firstName: 'Elon', lastName: 'Musk' },
     { firstName: 'Jeffrey', lastName: 'Bezos' },

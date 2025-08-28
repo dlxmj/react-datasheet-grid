@@ -55,7 +55,7 @@ const rows = [
 ]
 
 test('Copy single cell', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -77,7 +77,7 @@ test('Copy single cell', async () => {
 })
 
 test('Copy multiple cell', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
 
   render(<DataSheetGrid value={rows} columns={columns} ref={ref} />)
 
@@ -96,7 +96,7 @@ test('Copy multiple cell', async () => {
 })
 
 test('Cut multiple cells', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -129,9 +129,9 @@ test('Cut multiple cells', async () => {
 })
 
 test('Copy with headers - single cell', async () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
-  
+
   // Mock the clipboard API for copy with headers
   const mockWriteText = jest.fn()
   const mockWrite = jest.fn()
@@ -155,13 +155,13 @@ test('Copy with headers - single cell', async () => {
 
   // Simulate right-click context menu and copy with headers
   const copyWithHeadersAction = jest.fn()
-  
+
   // Test that the context menu includes the new option
   const contextMenuItem = {
     type: 'COPY_WITH_HEADERS' as const,
     action: copyWithHeadersAction,
   }
-  
+
   // Verify the menu item can be created
   expect(contextMenuItem.type).toBe('COPY_WITH_HEADERS')
   expect(typeof contextMenuItem.action).toBe('function')

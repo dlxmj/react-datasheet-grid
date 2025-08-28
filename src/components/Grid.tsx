@@ -11,7 +11,7 @@ import cx from 'classnames'
 import { Cell as CellComponent } from './Cell'
 import { useMemoizedIndexCallback } from '../hooks/useMemoizedIndexCallback'
 
-export const Grid = <T extends any>({
+export function Grid<T>({
   data,
   columns,
   outerRef,
@@ -61,7 +61,7 @@ export const Grid = <T extends any>({
   insertRowAfter: (row: number, count?: number) => void
   stopEditing: (opts?: { nextRow?: boolean }) => void
   onScroll?: React.UIEventHandler<HTMLDivElement>
-}) => {
+}) {
   const rowVirtualizer = useVirtualizer({
     count: data.length,
     getScrollElement: () => outerRef.current,

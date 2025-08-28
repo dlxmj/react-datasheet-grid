@@ -40,7 +40,7 @@ const KeyComponent: CellComponent<any, ColumnData> = ({
 }
 
 export const keyColumn = <
-  T extends Record<string, any>,
+  T extends Record<string, T[string]>,
   K extends keyof T = keyof T,
   PasteValue = string
 >(
@@ -76,7 +76,11 @@ export const keyColumn = <
     typeof column.cellClassName === 'function'
       ? ({ rowData, rowIndex, columnId }) => {
           return typeof column.cellClassName === 'function'
-            ? column.cellClassName({ rowData: rowData[key], rowIndex, columnId })
+            ? column.cellClassName({
+                rowData: rowData[key],
+                rowIndex,
+                columnId,
+              })
             : column.cellClassName ?? undefined
         }
       : column.cellClassName,

@@ -22,7 +22,7 @@ export type AddRowsComponentProps = AddRowsComponentPropsBase
 export type SimpleColumn<T = any, C = any> = SimpleColumnBase<T, C>
 export type ContextMenuComponentProps = ContextMenuComponentPropsBase
 export type ContextMenuItem = ContextMenuItemBase
-export type DataSheetGridRef = DataSheetGridRefBase
+export type DataSheetGridRef<T> = DataSheetGridRefBase<T>
 export const DynamicDataSheetGrid = DataSheetGridBase
 export const DataSheetGrid = StaticDataSheetGridBase
 export { textColumn, createTextColumn } from './columns/textColumn'

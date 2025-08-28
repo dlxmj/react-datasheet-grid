@@ -20,7 +20,7 @@ const columns: Column[] = [
 ]
 
 test('Duplicate row with Cmd+D', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -63,7 +63,7 @@ test('Duplicate row with Cmd+D', () => {
 })
 
 test('Duplicate row with Ctrl+D', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(
@@ -110,7 +110,7 @@ test('Duplicate row with Ctrl+D', () => {
 })
 
 test('Duplicate multiple rows', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
   const duplicateRow = jest.fn(({ rowData }) => ({ ...rowData }))
 
@@ -176,7 +176,7 @@ test('Duplicate multiple rows', () => {
 })
 
 test('Try to duplicate locked rows', () => {
-  const ref = { current: null as unknown as DataSheetGridRef }
+  const ref = { current: null as unknown as DataSheetGridRef<any> }
   const onChange = jest.fn()
 
   render(

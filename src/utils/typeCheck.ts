@@ -1,10 +1,18 @@
-import { Cell, CellWithId, Column, Selection, SelectionWithId } from '../types'
+import type {
+  Cell,
+  CellWithId,
+  CellWithIdInput,
+  Column,
+  Selection,
+  SelectionWithId,
+  SelectionWithIdInput,
+} from '../types'
 
-export const getCell = (
-  value: any,
+export const getCell = <T>(
+  value: CellWithIdInput,
   colMax: number,
   rowMax: number,
-  columns: Column<any, any, any>[]
+  columns: Column<T, any, any>[]
 ): Cell | null => {
   if (value === null || !colMax || !rowMax) {
     return null
@@ -31,9 +39,9 @@ export const getCell = (
   return cell
 }
 
-export const getCellWithId = (
+export const getCellWithId = <T>(
   cell: Cell | null,
-  columns: Column<any, any, any>[]
+  columns: Column<T, any, any>[]
 ): typeof cell extends null ? CellWithId | null : CellWithId =>
   cell
     ? {
@@ -43,11 +51,11 @@ export const getCellWithId = (
       }
     : (null as never)
 
-export const getSelection = (
-  value: any,
+export const getSelection = <T>(
+  value: SelectionWithIdInput,
   colMax: number,
   rowMax: number,
-  columns: Column<any, any, any>[]
+  columns: Column<T, any, any>[]
 ): Selection | null => {
   if (value === null || !colMax || !rowMax) {
     return null
@@ -69,9 +77,9 @@ export const getSelection = (
   return selection as Selection
 }
 
-export const getSelectionWithId = (
+export const getSelectionWithId = <T>(
   selection: Selection | null,
-  columns: Column<any, any, any>[]
+  columns: Column<T, any, any>[]
 ): SelectionWithId | null =>
   selection
     ? {

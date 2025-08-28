@@ -7,7 +7,7 @@ export const Cell: FC<{
   disabled?: boolean
   className?: string
   active?: boolean
-  children?: any
+  children?: React.ReactElement
   width: number
   left: number
 }> = ({
