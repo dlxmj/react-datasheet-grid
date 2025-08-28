@@ -190,5 +190,5 @@ export type DataSheetGridRef<T> = {
   selection: SelectionWithId | null
   setActiveCell: (activeCell: CellWithIdInput /*| null */) => void
   setSelection: (selection: SelectionWithIdInput /*| null */) => void
-  updateRowWithId: (id: string | number, data: T) => void
+  updateRowWithId: (id: string | number, data: T) => boolean
 }

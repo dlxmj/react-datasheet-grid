@@ -1832,9 +1832,9 @@ export const DataSheetGrid = React.memo(
       },
       updateRowWithId: (id, value) => {
         const rowIndex = idRowPointer.get(id)
-        if (rowIndex === undefined) return
+        if (rowIndex === undefined) return false
         setRowData(rowIndex, value)
-
+        return true
         // const selection = getSelection(
         //   value,
         //   columns.length - (hasStickyRightColumn ? 2 : 1),
